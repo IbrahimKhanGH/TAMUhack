@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const expressWs = require('express-ws');
 const OpenAI = require('openai');
-const SecurityScraper = require('./services/security-scraper');
 
 const { SYSTEM_PROMPT, PORT } = require('./config/constants');
 const { NAVIGATION_FUNCTIONS, handleNavigation } = require('./functions/navigation');
@@ -16,9 +15,6 @@ app.use(express.json());
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
-
-// Initialize security scraper
-const securityScraper = new SecurityScraper(process.env.FIRECRAWL_API_KEY);
 
 /**
  * State Management
@@ -156,9 +152,6 @@ app.ws("/llm-websocket/:call_id", async (ws, req) => {
     STATE.lastResponseId = null;
   });
 });
-
-// Start periodic updates of security wait times
-securityScraper.startPeriodicUpdates(10); // Updates every 10 minutes
 
 // Start the server
 app.listen(PORT, () => {
